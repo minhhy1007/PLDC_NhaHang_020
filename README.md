@@ -1,0 +1,127 @@
+<div align="center">
+  <img src="https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React Native" />
+  <img src="https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white" alt="NestJS" />
+  <img src="https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white" alt="Prisma" />
+  <img src="https://img.shields.io/badge/MySQL-00000F?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL" />
+  <img src="https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&logoColor=white" alt="Socket.io" />
+
+  <h1>🍽️ Restaurant Booking O2O Ecosystem</h1>
+  <p><b>Hệ sinh thái Quản lý & Đặt món Nhà hàng Đa nền tảng</b></p>
+  <p><i>Một giải pháp công nghệ toàn diện kết hợp giữa Đặt hàng trực tuyến (Delivery) và Trải nghiệm tại quán (Dine-in), được trợ lực bởi Trí tuệ nhân tạo (AI) và công nghệ Thời gian thực (Real-time).</i></p>
+</div>
+
+---
+
+## 🌟 Giới thiệu Dự án
+
+Dự án **Restaurant Booking O2O** được xây dựng nhằm giải quyết bài toán vận hành phức tạp của các nhà hàng hiện đại. Bằng việc áp dụng mô hình **O2O (Online to Offline)**, hệ thống không chỉ cung cấp cho khách hàng một ứng dụng đặt đồ ăn tiện lợi mà còn trang bị cho đội ngũ nhân viên và quản lý một công cụ kiểm soát luồng công việc tự động, chính xác và chuyên nghiệp.
+
+Dự án được thiết kế theo kiến trúc **Client-Server** chặt chẽ, tối ưu hóa trải nghiệm người dùng (UX) trên nền tảng di động và đảm bảo hiệu năng xử lý, tính toàn vẹn dữ liệu mạnh mẽ ở phía Server.
+
+## 🚀 Các Điểm Chạm Công Nghệ Đột Phá (Key Innovations)
+
+Thay vì chỉ làm một ứng dụng đặt món thông thường, dự án tự hào tích hợp các công nghệ nâng cao:
+
+*   🤖 **Trợ lý AI Tư vấn Cá nhân hóa (Ollama RAG):** Không cần nhân viên thật trực chat. Hệ thống tích hợp LLM nội bộ đọc hiểu Menu trực tiếp từ Database và tư vấn món ăn phù hợp nhất theo ngân sách, sở thích của khách hàng.
+*   💳 **Thanh toán VietQR & Đối soát Tự động:** Tích hợp API ngân hàng tạo mã QR động chứa sẵn số tiền và nội dung chuyển khoản. Khách hàng dễ dàng tải lên hình ảnh biên lai (lưu trữ an toàn trên **Cloudinary**) để Admin đối soát một chạm.
+*   📱 **O2O QR Dine-in (Gọi món tại bàn):** Ứng dụng tận dụng Camera của thiết bị di động để quét mã QR dán tại bàn. Khách hàng tự gọi món, hệ thống tự động ghim `ID Bàn` vào đơn hàng và truyền thẳng xuống bếp, loại bỏ hoàn toàn sai sót do ghi chép tay.
+*   ⚡ **Hỗ trợ Thời gian thực (Socket.io Live Chat):** Phá vỡ rào cản giao tiếp giữa Khách hàng và Quán ăn bằng hệ thống nhắn tin Real-time tốc độ cao.
+*   🔔 **Telegram Bot Push Notification:** Quản lý không cần mở App liên tục. Mọi đơn hàng mới đều được Server tự động đẩy thông báo (Push Message) sang nhóm Telegram nội bộ của nhà hàng.
+
+## 🛠️ Kiến Trúc & Công Nghệ (Tech Stack)
+
+### Nền tảng Di động (Mobile Client)
+*   **Core:** React Native (sử dụng Expo Managed Workflow để tối ưu tốc độ phát triển).
+*   **Language:** TypeScript (đảm bảo Type-safety tuyệt đối).
+*   **State Management:** React Context API (Quản lý Global State như Giỏ hàng, Session Người dùng).
+*   **Navigation:** React Navigation v6 (Stack, Tab, Drawer).
+
+### Nền tảng Máy chủ (Backend API)
+*   **Core Framework:** NestJS (Kiến trúc Module hóa tiêu chuẩn Enterprise).
+*   **Language:** TypeScript.
+*   **Database & ORM:** MySQL kết hợp cùng Prisma ORM (Mô hình hóa dữ liệu và Migration tự động).
+*   **Real-time Communication:** Socket.io (WebSocket).
+*   **Security:** JWT (JSON Web Token) cho Authentication, Bcrypt (Hashing mật khẩu).
+*   **Media Storage:** Cloudinary (Lưu trữ ảnh món ăn, ảnh biên lai và ảnh review).
+
+---
+
+## 👥 Phân Quyền Vai Trò (Role-based Access Control)
+
+Hệ thống cung cấp giao diện và nghiệp vụ hoàn toàn tách biệt cho 3 nhóm người dùng:
+
+1.  **Khách hàng (Customer Role):**
+    *   Trải nghiệm Home UI thu hút, lướt danh mục và tìm kiếm món ăn.
+    *   Quản lý Giỏ hàng thông minh (Local State).
+    *   Lựa chọn hình thức: Giao hàng tận nơi (Delivery) hoặc Ăn tại quán (Dine-in qua QR).
+    *   Đánh giá và tải hình ảnh món ăn sau khi đơn hàng hoàn tất.
+2.  **Nhân viên Vận hành (Staff Role):**
+    *   Giám sát **Sơ đồ bàn (Table Map)** trực quan (Trống, Đang phục vụ, Bảo trì).
+    *   Nhận đơn hàng mới, cập nhật vòng đời đơn: `PENDING` ➡️ `CONFIRMED` ➡️ `COOKING` ➡️ `SERVED` ➡️ `COMPLETED`.
+    *   Giải đáp thắc mắc qua cổng Live Chat.
+3.  **Quản trị viên (Admin Role):**
+    *   Quản lý danh mục, CRUD món ăn (Kèm kéo thả upload ảnh Cloudinary).
+    *   Đối soát tính hợp lệ của các giao dịch VietQR dựa trên ảnh biên lai khách cung cấp.
+    *   Xem thống kê báo cáo doanh thu theo biểu đồ trực quan, xuất file Excel/CSV.
+
+---
+
+## ⚙️ Hướng Dẫn Cài Đặt (Installation Guide)
+
+### Yêu cầu Tiền quyết (Prerequisites)
+*   [Node.js](https://nodejs.org/) (Version 18.x trở lên)
+*   [MySQL Server](https://dev.mysql.com/downloads/installer/) đang chạy ở port mặc định (3306).
+*   Ứng dụng **Expo Go** tải sẵn trên App Store (iOS) hoặc Google Play (Android).
+
+### 1. Triển khai Backend (NestJS Server)
+
+```bash
+# Di chuyển vào thư mục backend
+cd backend
+
+# Cài đặt các thư viện phụ thuộc
+npm install
+
+# Khởi tạo Database dựa trên schema của Prisma
+npx prisma migrate dev --name init
+
+# Nạp dữ liệu giả lập (Nếu có) để test hệ thống
+npm run seed
+
+# Khởi động Server ở chế độ Development (Auto-reload)
+npm run start:dev
+```
+*Server sẽ lắng nghe tại: `http://localhost:3000`*
+
+#### 🔑 Cấu hình Biến môi trường (Environment Variables)
+Bạn cần tạo một file `.env` nằm trong thư mục `backend/` dựa trên mẫu `.env.example` với các cấu hình cốt lõi:
+```env
+DATABASE_URL="mysql://root:password@localhost:3306/restaurant_db"
+JWT_SECRET="your_super_secret_jwt_key"
+CLOUDINARY_CLOUD_NAME="..."
+CLOUDINARY_API_KEY="..."
+CLOUDINARY_API_SECRET="..."
+```
+
+### 2. Triển khai Ứng dụng Di động (React Native)
+
+```bash
+# Di chuyển vào thư mục mobile
+cd mobile
+
+# Cài đặt các thư viện phụ thuộc
+npm install
+
+# Khởi động Bundler của Expo
+npm run start
+```
+*Mở ứng dụng Expo Go trên điện thoại của bạn, quét mã QR hiển thị trên Terminal để nạp ứng dụng. Cả điện thoại và máy tính phải dùng chung một mạng Wi-Fi.*
+
+#### 🌐 Lưu ý Quan trọng về Mạng (Network Configuration)
+Vì điện thoại thật không hiểu địa chỉ `localhost`, bạn bắt buộc phải cấu hình lại IP LAN của máy tính vào Source Code Mobile:
+1. Mở file: `mobile/src/config/ip.ts`
+2. Đổi hằng số IP thành địa chỉ IPv4 của máy bạn (Ví dụ: `192.168.1.5`).
+3. Khởi động lại Expo để áp dụng.
+
+---
+> **Lưu ý Bản quyền:** Dự án này được thiết kế, phát triển và tối ưu hóa đặc biệt nhằm phục vụ cho mục đích nghiên cứu học thuật và Báo cáo Đồ án Tốt nghiệp/Luận văn Cử nhân. Mọi hành vi sao chép thương mại cần được xem xét cẩn trọng.

@@ -1,0 +1,384 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String          @id @default(uuid())
+  name           String
+  email          String          @unique
+  password       String
+  phone          String?
+  role           Role            @default(USER)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  addresses      Address[]
+  aiInteractions AiInteraction[]
+  orders         Order[]
+  packages       Package[]       @relation("UserPackages")
+  payments       Payment[]
+  milestones     UserMilestone[]
+  comments       Comment[]
+  mealRecommendations MealRecommendation[]
+
+  @@map("users")
+}
+
+model UserMilestone {
+  id          String   @id @default(uuid())
+  userId      String
+  milestoneId Int
+  claimedAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, milestoneId])
+  @@map("user_milestones")
+}
+
+model Address {
+  id        String      @id @default(uuid())
+  userId    String
+  name      String
+  phone     String
+  address   String
+  detail    String?
+  type      AddressType @default(HOME)
+  isDefault Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "addresses_userId_fkey")
+  @@map("addresses")
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  slug        String?
+  description String?   @db.Text
+  image       String?   @db.Text
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id            String           @id @default(uuid())
+  name          String
+  slug          String?
+  description   String?          @db.Text
+  price         Float
+  originalPrice Float?
+  images        String           @db.Text
+  unit          String           @default("đĩa")
+  isAvailable   Boolean          @default(true)
+  isBestSeller  Boolean          @default(false)
+  categoryId    String
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  variants      ProductVariant[]
+  category      Category         @relation(fields: [categoryId], references: [id])
+
+  @@index([categoryId], map: "products_categoryId_fkey")
+  @@map("products")
+}
+
+model ProductVariant {
+  id        String  @id @default(uuid())
+  name      String
+  price     Float
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId], map: "product_variants_productId_fkey")
+  @@map("product_variants")
+}
+
+model Table {
+  id        Int         @id @default(autoincrement())
+  name      String      @unique
+  capacity  Int
+  status    TableStatus @default(AVAILABLE)
+  location  String      @default("Main Hall")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  orders    Order[]
+
+  @@map("tables")
+}
+
+model Order {
+  id              String        @id @default(uuid())
+  userId          String?
+  tableId         Int?
+  totalAmount     Float
+  status          OrderStatus   @default(PENDING)
+  type            OrderType     @default(DINE_IN)
+  paymentStatus   PaymentStatus @default(UNPAID)
+  note            String?       @db.Text
+  deliveryAddress String?       @db.Text
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  items           OrderItem[]
+  table           Table?        @relation(fields: [tableId], references: [id])
+  user            User?         @relation(fields: [userId], references: [id])
+  payments        Payment[]
+  vietQr          VietQr?
+
+  @@index([tableId], map: "orders_tableId_fkey")
+  @@index([userId], map: "orders_userId_fkey")
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  orderId   String
+  productId String
+  name      String
+  quantity  Int
+  price     Float
+  variant   String?
+  note      String?
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId], map: "order_items_orderId_fkey")
+  @@map("order_items")
+}
+
+model Promotion {
+  id          String   @id @default(uuid())
+  name        String
+  discount    Float
+  until       DateTime
+  isActive    Boolean  @default(true)
+  code        String?
+  minOrder    Float    @default(0)
+  image       String?  @db.Text
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("promotions")
+}
+
+model Package {
+  id            String        @id @default(uuid())
+  name          String
+  address       String
+  description   String?       @db.Text
+  price         Float
+  status        PackageStatus @default(PENDING)
+  paymentMethod String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  userId        String?
+  user          User?         @relation("UserPackages", fields: [userId], references: [id], onDelete: Cascade)
+  payments      Payment[]
+  vietQr        VietQr?
+
+  @@index([userId], map: "packages_userId_fkey")
+  @@map("packages")
+}
+
+model Payment {
+  id            String            @id @default(uuid())
+  orderId       String?
+  packageId     String?
+  userId        String?
+  amount        Float
+  method        PaymentMethod     @default(CASH)
+  status        TransactionStatus @default(PENDING)
+  transactionId String?
+  receiptUrl    String?           @db.Text
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  order         Order?            @relation(fields: [orderId], references: [id])
+  package       Package?          @relation(fields: [packageId], references: [id])
+  user          User?             @relation(fields: [userId], references: [id])
+
+  @@index([orderId], map: "payments_orderId_fkey")
+  @@index([packageId], map: "payments_packageId_fkey")
+  @@index([userId], map: "payments_userId_fkey")
+  @@map("payments")
+}
+
+model Otp {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  otp       String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("otps")
+}
+
+model Notification {
+  id          String   @id @default(uuid())
+  title       String
+  content     String   @db.Text
+  description String?  @db.Text
+  isActive    Boolean  @default(true)
+  startAt     DateTime
+  endAt       DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("notifications")
+}
+
+model Conversation {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  messages  Message[]
+
+  @@map("conversations")
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String
+  senderId       String
+  senderRole     String
+  content        String       @db.Text
+  type           String       @default("TEXT")
+  metadata       Json?
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId], map: "messages_conversationId_fkey")
+  @@map("messages")
+}
+
+model VietQr {
+  id            String   @id @default(uuid())
+  accountName   String
+  bin           String
+  accountNumber String
+  amount        Float
+  orderInfo     String?  @db.Text
+  qrData        String?  @db.Text
+  deeplink      String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  orderId       String?  @unique
+  packageId     String?  @unique
+  order         Order?   @relation(fields: [orderId], references: [id])
+  package       Package? @relation(fields: [packageId], references: [id])
+
+  @@map("viet_qrs")
+}
+
+model AiInteraction {
+  id        String   @id @default(uuid())
+  userId    String?
+  query     String   @db.Text
+  response  String   @db.Text
+  type      String?
+  products  Json?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "ai_interactions_userId_fkey")
+  @@map("ai_interactions")
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  userId    String?
+  content   String   @db.Text
+  imageUrl  String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "comments_userId_fkey")
+  @@map("comments")
+}
+
+enum AddressType {
+  HOME
+  OFFICE
+  OTHER
+}
+
+enum Role {
+  USER
+  ADMIN
+  STAFF
+}
+
+enum TableStatus {
+  AVAILABLE
+  OCCUPIED
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  COOKING
+  SERVED
+  COMPLETED
+  CANCELLED
+}
+
+enum OrderType {
+  DINE_IN
+  TAKEAWAY
+  DELIVERY
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  REFUNDED
+}
+
+enum PackageStatus {
+  PENDING
+  CONFIRMED
+  CANCELED
+}
+
+enum PaymentMethod {
+  CASH
+  CREDIT_CARD
+  BANK_TRANSFER
+  E_WALLET
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model MealRecommendation {
+  id                String   @id @default(uuid())
+  userId            String?
+  height            Float?
+  weight            Float?
+  bmi               Float?
+  bmiStatus         String?
+  suggestedCalories Int?
+  budget            Float?
+  mealType          String?
+  keyword           String?
+  recommendedData   Json?
+  createdAt         DateTime @default(now())
+  user              User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "meal_recommendations_userId_fkey")
+  @@map("meal_recommendations")
+}
+

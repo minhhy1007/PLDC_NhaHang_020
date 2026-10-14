@@ -9,10 +9,9 @@ export const authSlice = {
   name: "auth",
   initialState,
   reducers: {
-    login: (state: any, action: any) => {},
-    logout: (state: any) => {},
+    login: (state: any, action: any) => { },
+    logout: (state: any) => { },
   },
 };
-
 // export const { login, logout } = authSlice.actions;
 // export default authSlice.reducer;
